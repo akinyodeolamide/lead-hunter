@@ -1,0 +1,1 @@
+from lead_hunter.telegram_bot.bot import LeadHunterTelegramBot

@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  lead-hunter:
+    build: .
+    container_name: lead-hunter
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - MOONSHOT_API_KEY=${MOONSHOT_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - SMTP_HOST=${SMTP_HOST:-localhost}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USERNAME=${SMTP_USERNAME}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_FROM=${SMTP_FROM:-lead-hunter@example.com}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - PERSISTENCE_TYPE=${PERSISTENCE_TYPE:-sqlite}
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///data/lead_hunter.db}
+      - LEAD_HUNTER_API_KEY=${LEAD_HUNTER_API_KEY}
+    volumes:
+      - lead_hunter_data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    stop_grace_period: 30s
+
+volumes:
+  lead_hunter_data:
